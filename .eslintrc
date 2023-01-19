@@ -1,0 +1,133 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "overrides": [
+    {
+      "files": [
+        "**/*.spec.ts",
+        "**/*.spec.tsx"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ],
+  "plugins": [
+    "import",
+    "@darraghor/nestjs-typed",
+    "@typescript-eslint",
+    "jest"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/typescript",
+    "plugin:@darraghor/nestjs-typed/recommended",
+    "airbnb-typescript/base"
+  ],
+  "rules": {
+    "@darraghor/nestjs-typed/api-method-should-specify-api-response": 0,
+    "import/no-cycle": [
+      2,
+      {
+        "ignoreExternal": true
+      }
+    ],
+    "arrow-body-style": [
+      1,
+      "as-needed"
+    ],
+    "no-case-declarations": 0,
+    "no-await-in-loop": 1,
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+    "import/no-unresolved": 0,
+    "no-fallthrough": [
+      1,
+      {
+        "allowEmptyCase": true
+      }
+    ],
+    "comma-dangle": [
+      1,
+      {
+        "arrays": "only-multiline",
+        "objects": "only-multiline",
+        "imports": "only-multiline",
+        "exports": "only-multiline",
+        "functions": "only-multiline"
+      }
+    ],
+    "prefer-template": 0,
+    "no-path-concat": "warn",
+    "max-len": [
+      1,
+      150
+    ],
+    "no-plusplus": 0,
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
+    "@typescript-eslint/lines-between-class-members": 0,
+    "@typescript-eslint/indent": [
+      1,
+      4,
+      {
+        "SwitchCase": 1,
+        "ignoredNodes": [
+          "PropertyDefinition",
+          "FunctionExpression"
+        ]
+      }
+    ],
+    "quotes": [
+      2,
+      "single"
+    ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true,
+        "optionalDependencies": false,
+        "peerDependencies": false
+      }
+    ],
+    "import/prefer-default-export": 0,
+    "@typescript-eslint/no-explicit-any": 1,
+    "@typescript-eslint/ban-ts-comment": 1,
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "jest/no-disabled-tests": 0,
+    "jest/no-focused-tests": "error",
+    "jest/no-identical-title": "error",
+    "jest/prefer-to-have-length": "warn",
+    "jest/valid-expect": "error",
+    "@typescript-eslint/return-await": 0
+  },
+  "parserOptions": {
+    "project": [
+      "./tsconfig.json"
+    ],
+    "sourceType": "module",
+    "ecmaVersion": 2022
+  },
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx"
+      ]
+    }
+  }
+}

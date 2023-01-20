@@ -1,16 +1,16 @@
-import { parseISO, isAfter, isValid, isBefore } from 'date-fns'
-import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common'
+import { parseISO, isAfter, isValid, isBefore } from 'date-fns';
+import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 
 type FromToQuery = {
     from: string,
     to: string,
-}
+};
 
 @Injectable()
 export class DateValidationPipe implements PipeTransform {
-    transform(value: any, metadata: ArgumentMetadata): any {
+    transform(value: any, _: ArgumentMetadata): any {
         if (!this.isValidQuery(value)) {
-            throw new BadRequestException(`Query param "${metadata.data}" is required.`);
+            throw new BadRequestException('Both "from" and "to" query params are required.');
         }
 
         const startDate = parseISO(value.from);
@@ -26,10 +26,6 @@ export class DateValidationPipe implements PipeTransform {
 
         if (isBefore(endDate, startDate)) {
             throw new BadRequestException('End date is before start date.');
-        }
-
-        if (isAfter(startDate, new Date())) {
-            throw new BadRequestException('Start date date is after today\'s date.');
         }
 
         if (isAfter(endDate, new Date())) {

@@ -21,7 +21,7 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "lib": ["ES2021", "dom"],
-    "allowJs": true,
-    "exclude": ["node_modules"]
-  }
+    "allowJs": true
+  },
+  "exclude": ["node_modules"]
 }

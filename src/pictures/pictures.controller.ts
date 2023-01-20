@@ -1,13 +1,13 @@
-import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { Controller, Get, Query } from '@nestjs/common'
-import { HttpCode } from '@nestjs/common/decorators'
-import { HttpStatus } from '@nestjs/common/enums'
-import { PicturesService } from './pictures.service'
-import { DateValidationPipe } from './validation/DateValidationPipe'
+import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Query } from '@nestjs/common';
+import { HttpCode } from '@nestjs/common/decorators';
+import { HttpStatus } from '@nestjs/common/enums';
+import { PicturesService } from './pictures.service';
+import { DateValidationPipe } from './validation/DateValidationPipe';
 
 type FetchUrlsResponse = {
     urls: string[]
-}
+};
 
 @ApiTags('pictures')
 @Controller('/pictures')
@@ -22,12 +22,12 @@ export class PicturesController {
             schema: {
                 properties: {
                     urls: {
-                        type: 'string'
-                    }
-                }
+                        type: 'string',
+                    },
+                },
             },
             status: HttpStatus.OK,
-        }
+        },
     )
     @ApiBadRequestResponse({
         description: 'Dates validation problem: empty, invalid format or another irregularity',
@@ -39,8 +39,10 @@ export class PicturesController {
     async index(
         @Query(DateValidationPipe) date: any,
     ): Promise<FetchUrlsResponse | never> {
+        const pictures = await this.picturesService.fetchNasaAPODPictures(date.from, date.to);
+
         return {
-            urls: await this.picturesService.fetchNasaAPODPictures(date.from, date.to),
-        }
+            urls: pictures.map((picture) => picture.url),
+        };
     }
 }

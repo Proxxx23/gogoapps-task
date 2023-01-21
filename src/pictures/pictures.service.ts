@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { ApodService } from '../nasa/apod/apod.service';
+import { ApodClient } from '../nasa/apod/apod.client';
 import { eachDayOfInterval, formatISO9075 } from 'date-fns';
 
 @Injectable()
 export class PicturesService {
-    constructor(private readonly apodService: ApodService) {
+    constructor(private readonly apodClient: ApodClient) {
     }
 
     async fetchNasaAPODPictures(start: string, end: string) {
-        return await this.apodService.fetchForDates(this.getAllDatesBetween(start, end));
+        return await this.apodClient.fetchForDates(this.getAllDatesBetween(start, end));
     }
 
     // todo: to rethink - as an external function it'd be easier to test it but for now it's tightly coupled with this service

@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { PicturesController } from './pictures.controller';
 import { PicturesService } from './pictures.service';
-import { ApodModule } from '../nasa/apod/apod.module';
+import { ApodClient } from '../nasa/apod/apod.client';
 
 @Module({
-    imports: [ApodModule],
+    imports: [],
     controllers: [PicturesController],
-    providers: [PicturesService],
+    providers: [PicturesService, ApodClient],
 })
 export class PicturesModule {}

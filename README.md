@@ -62,4 +62,4 @@ $ npm run test
 
 ## API Documentation
 
-You may find documentation [here](http://127.0.0.1:8080/doc)
+After booting up server you may find documentation [here](http://127.0.0.1:8080/doc)

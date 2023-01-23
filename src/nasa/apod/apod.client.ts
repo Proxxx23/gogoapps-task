@@ -32,13 +32,15 @@ export class APODClient {
             ? await this.fetchInBatches(endpoints)
             : await this.fetch(endpoints);
 
-        return responses.map((res) => res.data);
+        return responses.map((res) => res[0]);
     }
 
     private async fetch(endpoints: string[]) {
         return Promise.all(endpoints.map(async (endpoint) => {
             try {
-                return await firstValueFrom(this.httpClient.get<NasaAPODResponse>(endpoint));
+                const { data } = await firstValueFrom(this.httpClient.get<NasaAPODResponse>(endpoint));
+
+                return data;
             } catch (err) {
                 // A bottleneck/rate limiter/requests limiter exclusively for this client will be needed
                 if (isAxiosError(err)) {

@@ -24,6 +24,7 @@
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.1.4",
+    "@nestjs/throttler": "^4.0.0",
     "axios": "^1.2.3",
     "date-fns": "^2.29.3",
     "helmet": "^6.0.1",

@@ -10,26 +10,26 @@ type FromToQuery = {
 export class DateValidationPipe implements PipeTransform {
     transform(value: any, _: ArgumentMetadata): any {
         if (!this.isValidQuery(value)) {
-            throw new BadRequestException('Both "from" and "to" query params are required.');
+            throw new BadRequestException({ error: 'Both "from" and "to" query params are required.' });
         }
 
         const startDate = parseISO(value.from);
         const endDate = parseISO(value.to);
 
         if (!isValid(startDate)) {
-            throw new BadRequestException('Start date has invalid ISO8601 date format.');
+            throw new BadRequestException({ error: 'Start date has invalid ISO8601 date format.' });
         }
 
         if (!isValid(endDate)) {
-            throw new BadRequestException('End date has invalid ISO8601 date format.');
+            throw new BadRequestException({ error: 'End date has invalid ISO8601 date format.' });
         }
 
         if (isBefore(endDate, startDate)) {
-            throw new BadRequestException('End date is before start date.');
+            throw new BadRequestException({ error: 'End date is before start date.' });
         }
 
         if (isAfter(endDate, new Date())) {
-            throw new BadRequestException('End date is after today\'s date.');
+            throw new BadRequestException({ error: 'End date is after today\'s date.' });
         }
 
         return value;

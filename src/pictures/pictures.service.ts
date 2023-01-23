@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ApodClient } from '../nasa/apod/apod.client';
+import { APODClient } from '../nasa/apod/apod.client';
 import { eachDayOfInterval, formatISO9075 } from 'date-fns';
 
 @Injectable()
 export class PicturesService {
-    constructor(private readonly apodClient: ApodClient) {
+    constructor(private readonly apodClient: APODClient) {
     }
 
     async fetchNasaAPODPictures(start: string, end: string) {

@@ -4,7 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import { PicturesModule } from './pictures.module';
 import { HttpStatus } from '@nestjs/common/enums';
 import { addDays, formatISO9075, subDays } from 'date-fns'
-import { MAX_CONCURRENT_REQUESTS } from '../nasa/apod/apod.client'
+import { MAX_PARALLEL_REQUESTS } from '../nasa/apod/apod.client'
 
 describe('Pictures endpoints', () => {
     let app: INestApplication;
@@ -100,7 +100,7 @@ describe('Pictures endpoints', () => {
         // });
 
         it('returns 200 OK with array of urls upon valid request for more than MAX_CONCURRENT_REQUESTS dates interval', async () => {
-            const fewDaysAgo = formatISO9075(subDays(new Date(), MAX_CONCURRENT_REQUESTS + 2), { representation: 'date' });
+            const fewDaysAgo = formatISO9075(subDays(new Date(), MAX_PARALLEL_REQUESTS + 2), { representation: 'date' });
             const today = formatISO9075(new Date(), { representation: 'date' });
 
             console.log(fewDaysAgo, today);
@@ -111,7 +111,7 @@ describe('Pictures endpoints', () => {
                 .send();
 
             expect(res.body).not.toBeUndefined();
-            expect(res.body.urls).toHaveLength(MAX_CONCURRENT_REQUESTS + 2);
+            expect(res.body.urls).toHaveLength(MAX_PARALLEL_REQUESTS + 2);
             expect(res.body.urls[0]).not.toBeUndefined();
             expect(res.body.urls[1]).not.toBeUndefined();
         });

@@ -1,10 +1,12 @@
 import { BadGatewayException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import process from 'process';
-import axios, { isAxiosError } from 'axios'; // NestJS httpClient.axiosRef has no all() method
 import chunk from 'lodash.chunk';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { isAxiosError } from 'axios';
 
 const API_KEY = process.env.API_KEY || 'DEMO_KEY';
-export const MAX_CONCURRENT_REQUESTS = process.env.CONCURRENT_REQUESTS ? +process.env.CONCURRENT_REQUESTS : 5;
+export const MAX_PARALLEL_REQUESTS = process.env.CONCURRENT_REQUESTS ? +process.env.CONCURRENT_REQUESTS : 1;
 
 const createEndpointUrl = (date: string) => `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&date=${date}`;
 
@@ -19,13 +21,14 @@ export type NasaAPODResponse = {
     url: string,
 };
 
-// todo: DI axios instance from custom factory provider in module
 @Injectable()
-export class ApodClient {
+export class APODClient {
+    constructor(private readonly httpClient: HttpService) {}
+
     async fetchForDates(dates: string[]): Promise<NasaAPODResponse[]> {
         const endpoints = dates.map((date) => createEndpointUrl(date));
 
-        const responses = dates.length > MAX_CONCURRENT_REQUESTS
+        const responses = endpoints.length > MAX_PARALLEL_REQUESTS
             ? await this.fetchInBatches(endpoints)
             : await this.fetch(endpoints);
 
@@ -33,20 +36,24 @@ export class ApodClient {
     }
 
     private async fetch(endpoints: string[]) {
-        return axios.all(endpoints.map(async (endpoint) => {
+        return Promise.all(endpoints.map(async (endpoint) => {
             try {
-                return await axios.get<NasaAPODResponse>(endpoint);
+                return await firstValueFrom(this.httpClient.get<NasaAPODResponse>(endpoint));
             } catch (err) {
+                // A bottleneck/rate limiter/requests limiter exclusively for this client will be needed
                 if (isAxiosError(err)) {
-                    throw new BadGatewayException(`NASA APOD API responded with status "${err.status}"`, err.message);
+                    throw new BadGatewayException({
+                        error: `[NASA APO API] responded with status ${err.response.status} and message: ${err.response.data.error.message}.`,
+                    });
                 }
-                throw new InternalServerErrorException('[NASA APO API] Internal Server Error', err);
+
+                throw new InternalServerErrorException({ error: 'Internal Server Error' }, err);
             }
         }));
     }
 
     private async fetchInBatches(endpoints: string[]) {
-        const endpointChunks: string[][] = chunk(endpoints, MAX_CONCURRENT_REQUESTS);
+        const endpointChunks: string[][] = chunk(endpoints, MAX_PARALLEL_REQUESTS);
 
         return Promise.all(endpointChunks.map(async (urls) => await this.fetch(urls)));
     }

@@ -1,15 +1,13 @@
 import { BadGatewayException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import process from 'process';
 import chunk from 'lodash.chunk';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { isAxiosError } from 'axios';
+import { API_KEY, MAX_PARALLEL_REQUESTS } from './apod.config';
 
-export const MAX_PARALLEL_REQUESTS = process.env.NASA_APOD_CONCURRENT_REQUESTS
-    ? +process.env.NASA_APOD_CONCURRENT_REQUESTS
-    : 5;
+// todo: think about creating config module (https://docs.nestjs.com/techniques/configuration)
 
-const createEndpointUrl = (date: string) => `https://api.nasa.gov/planetary/apod?api_key=${process.env.NASA_APOD_API_KEY}&date=${date}`;
+const createEndpointUrl = (date: string) => `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&date=${date}`;
 
 export type NasaAPODResponse = {
     copyright: string,
@@ -29,11 +27,9 @@ export class APODClient {
     async fetchForDates(dates: string[]): Promise<NasaAPODResponse[]> {
         const endpoints = dates.map((date) => createEndpointUrl(date));
 
-        const responses = endpoints.length > MAX_PARALLEL_REQUESTS
+        return endpoints.length > MAX_PARALLEL_REQUESTS
             ? await this.fetchInBatches(endpoints)
             : await this.fetch(endpoints);
-
-        return responses.map((res) => res[0]);
     }
 
     private async fetch(endpoints: string[]) {
@@ -43,7 +39,6 @@ export class APODClient {
 
                 return data;
             } catch (err) {
-                // A bottleneck/rate limiter/requests limiter exclusively for this client will be needed
                 if (isAxiosError(err)) {
                     throw new BadGatewayException({
                         error: `[NASA APO API] responded with status ${err.response.status} and message: ${err.response.data.error.message}.`,
@@ -58,6 +53,7 @@ export class APODClient {
     private async fetchInBatches(endpoints: string[]) {
         const endpointChunks: string[][] = chunk(endpoints, MAX_PARALLEL_REQUESTS);
 
-        return Promise.all(endpointChunks.map(async (urls) => await this.fetch(urls)));
+        return Promise.all(endpointChunks.map(async (urls) => await this.fetch(urls)))
+            .then((res) => res.flat());
     }
 }

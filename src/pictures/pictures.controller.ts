@@ -1,11 +1,11 @@
-import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Query } from '@nestjs/common';
 import { HttpCode } from '@nestjs/common/decorators';
 import { HttpStatus } from '@nestjs/common/enums';
 import { PicturesService } from './pictures.service';
 import { DateValidationPipe } from './validation/DateValidationPipe';
 
-type FetchUrlsResponse = {
+type IndexResponse = {
     urls: string[]
 };
 
@@ -20,8 +20,9 @@ export class PicturesController {
     constructor(private readonly picturesService: PicturesService) {}
 
     @Get()
-    @ApiQuery({ name: 'from', type: 'string' })
-    @ApiQuery({ name: 'to', type: 'string' })
+    @ApiOperation({ summary: 'Endpoint to fetch pictures of the day from NASA APOD API' })
+    @ApiQuery({ name: 'from', description: 'Starting date to search images. ISO8601 format.', type: 'string' })
+    @ApiQuery({ name: 'to', description: 'Ending date to search images. ISO8601 format', type: 'string' })
     @ApiOkResponse(
         {
             schema: {
@@ -41,7 +42,7 @@ export class PicturesController {
         description: 'Could not obtain data from NASA APOD API',
     })
     @HttpCode(HttpStatus.OK)
-    async index(@Query(DateValidationPipe) date: DateRangeQueryParams): Promise<FetchUrlsResponse | never> {
+    async index(@Query(DateValidationPipe) date: DateRangeQueryParams): Promise<IndexResponse | never> {
         const pictures = await this.picturesService.fetchNasaAPODPictures(date.from, date.to);
 
         return {

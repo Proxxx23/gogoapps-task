@@ -4,10 +4,16 @@ import helmet from 'helmet';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import process from 'process';
+import * as dotenv from 'dotenv';
 
-const FALLBACK_PORT = 3000;
+const DEFAULT_PORT = 8080;
 
 async function bootstrap() {
+    // should lay in test config
+    if (process.env.NODE_ENV === 'test') {
+        process.env.API_KEY = process.env.TEST_API_KEY;
+    }
+
     const app = await NestFactory.create(AppModule);
 
     const config = new DocumentBuilder()
@@ -35,7 +41,12 @@ async function bootstrap() {
         }),
     );
 
-    await app.listen(process.env.PORT || FALLBACK_PORT);
+    // Custom port exposing does not work
+    const env = dotenv.config().parsed;
+    const port = process.env.PORT || env.PORT || DEFAULT_PORT;
+    await app.listen(port);
+
+    console.log(`Server running at port ${port}`);
 }
 
 bootstrap();

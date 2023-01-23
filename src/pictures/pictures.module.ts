@@ -6,16 +6,24 @@ import { HttpModule } from '@nestjs/axios';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { PicturesThrottlerGuard } from '../throttler/PicturesThrottlerGuard';
+import process from 'process';
+
+const throttlerCfg = process.env.NODE_ENV === 'test'
+    ? {
+        ttl: 1,
+        limit: 100,
+    }
+    : {
+        ttl: 6,
+        limit: 1,
+    };
 
 @Module({
     imports: [
         HttpModule.register({
             timeout: 5000,
         }),
-        ThrottlerModule.forRoot({
-            ttl: 6,
-            limit: 1,
-        }),
+        ThrottlerModule.forRoot(throttlerCfg),
     ],
     controllers: [PicturesController],
     providers: [

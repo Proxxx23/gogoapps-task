@@ -12,7 +12,7 @@ async function bootstrap() {
 
     const config = new DocumentBuilder()
         .setTitle('Url-collector API')
-        .setDescription('Url-collector API documentation')
+        .setDescription('Url-collector API documentation.')
         .setVersion('1.0.0')
         .build();
 
@@ -35,7 +35,7 @@ async function bootstrap() {
         }),
     );
 
-    await app.listen(process.env.APP_PORT || FALLBACK_PORT);
+    await app.listen(process.env.PORT || FALLBACK_PORT);
 }
 
 bootstrap();

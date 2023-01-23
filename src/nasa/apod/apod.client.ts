@@ -5,10 +5,11 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { isAxiosError } from 'axios';
 
-const API_KEY = process.env.API_KEY || 'DEMO_KEY';
-export const MAX_PARALLEL_REQUESTS = process.env.CONCURRENT_REQUESTS ? +process.env.CONCURRENT_REQUESTS : 1;
+export const MAX_PARALLEL_REQUESTS = process.env.NASA_APOD_CONCURRENT_REQUESTS
+    ? +process.env.NASA_APOD_CONCURRENT_REQUESTS
+    : 5;
 
-const createEndpointUrl = (date: string) => `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&date=${date}`;
+const createEndpointUrl = (date: string) => `https://api.nasa.gov/planetary/apod?api_key=${process.env.NASA_APOD_API_KEY}&date=${date}`;
 
 export type NasaAPODResponse = {
     copyright: string,
